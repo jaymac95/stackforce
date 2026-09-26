@@ -1,0 +1,48 @@
+# Options the stack advisor chooses from. It checks current pricing and limits on the web
+# before recommending; treat any figures here as rough and re-verify.
+# Recommendations must come from the project's needs only — never partnerships or popularity.
+
+build_platforms:
+  code:
+    - { id: nextjs, label: "Next.js", good_for: [website, webapp, api], language: TypeScript }
+    - { id: laravel, label: "Laravel", good_for: [webapp, api], language: PHP }
+    - { id: python-web, label: "Django / FastAPI", good_for: [webapp, api], language: Python }
+    - { id: expo, label: "React Native / Expo", good_for: [mobile], language: TypeScript }
+    - { id: flutter, label: "Flutter", good_for: [mobile], language: Dart }
+    - { id: wordpress, label: "WordPress", good_for: [website], language: PHP }
+    - { id: shopify, label: "Shopify", good_for: [website], note: "online stores" }
+  no_code:
+    - { id: webflow, label: "Webflow", good_for: [website], note: "designer sites, client-editable" }
+    - { id: framer, label: "Framer", good_for: [website], note: "fast marketing sites" }
+    - { id: shopify-nocode, label: "Shopify (themes)", good_for: [website], note: "stores without custom code" }
+
+hosting:
+  - { id: vercel, label: "Vercel", best_for: [nextjs], note: "great DX; costs rise with heavy traffic" }
+  - { id: netlify, label: "Netlify", best_for: [nextjs, static] }
+  - { id: cloudflare, label: "Cloudflare Pages/Workers", best_for: [static, api], note: "generous free tier" }
+  - { id: render, label: "Render", best_for: [laravel, python-web, api] }
+  - { id: railway, label: "Railway", best_for: [laravel, python-web, api] }
+  - { id: fly, label: "Fly.io", best_for: [api, python-web] }
+  - { id: forge, label: "Laravel Forge + VPS", best_for: [laravel] }
+  - { id: managed-wp, label: "Managed WordPress (Kinsta, WP Engine)", best_for: [wordpress] }
+
+database:
+  - { id: supabase, label: "Supabase (Postgres)", note: "includes auth and storage; good free tier" }
+  - { id: neon, label: "Neon (Postgres)", note: "serverless Postgres" }
+  - { id: planetscale, label: "PlanetScale (MySQL)" }
+  - { id: firebase, label: "Firebase (Firestore)", note: "realtime; pairs with mobile" }
+  - { id: mongodb-atlas, label: "MongoDB Atlas" }
+  - { id: sqlite-litefs, label: "SQLite / Turso", note: "simple, cheap, small apps" }
+
+auth:
+  - { id: supabase-auth, label: "Supabase Auth" }
+  - { id: clerk, label: "Clerk", note: "fast to add, polished UI" }
+  - { id: authjs, label: "Auth.js (NextAuth)", note: "self-hosted, free" }
+  - { id: firebase-auth, label: "Firebase Auth" }
+  - { id: laravel-breeze, label: "Laravel Breeze/Fortify", note: "built-in for Laravel" }
+
+services:
+  payments: [ "Stripe", "Paddle (handles sales tax)", "Lemon Squeezy" ]
+  email: [ "Resend", "Postmark", "Amazon SES", "SendGrid" ]
+  file_storage: [ "Supabase Storage", "Cloudflare R2", "Amazon S3", "UploadThing" ]
+  analytics: [ "Plausible", "PostHog", "Umami (self-host)" ]

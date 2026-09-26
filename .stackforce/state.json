@@ -1,0 +1,13 @@
+{
+  "project": null,
+  "track": null,
+  "stack": null,
+  "phase": "start",
+  "stories": {
+    "total": 0,
+    "done": 0,
+    "current": null
+  },
+  "gates": {},
+  "updated": null
+}

@@ -1,0 +1,166 @@
+{
+  "planningGates": [
+    "brief",
+    "scope",
+    "architecture",
+    "ux"
+  ],
+  "tracks": {
+    "website": {
+      "label": "Website",
+      "description": "Marketing sites, landing pages, CMS builds",
+      "agents": [
+        "product-director",
+        "technical-director",
+        "quality-director",
+        "product-manager",
+        "tech-lead",
+        "qa-lead",
+        "devops-lead",
+        "performance-specialist",
+        "test-engineer",
+        "code-reviewer",
+        "docs-handoff",
+        "stack-advisor",
+        "ux-lead",
+        "frontend-lead",
+        "ui-accessibility",
+        "frontend-developer",
+        "integrations-specialist",
+        "seo-content"
+      ],
+      "gates": [
+        "tests",
+        "security",
+        "a11y",
+        "perf",
+        "seo",
+        "forms"
+      ],
+      "packs": [
+        "nextjs",
+        "wordpress",
+        "shopify"
+      ]
+    },
+    "webapp": {
+      "label": "Web app",
+      "description": "SaaS, dashboards, portals",
+      "agents": [
+        "product-director",
+        "technical-director",
+        "quality-director",
+        "product-manager",
+        "tech-lead",
+        "qa-lead",
+        "devops-lead",
+        "performance-specialist",
+        "test-engineer",
+        "code-reviewer",
+        "docs-handoff",
+        "stack-advisor",
+        "ux-lead",
+        "frontend-lead",
+        "backend-lead",
+        "security-lead",
+        "ui-accessibility",
+        "frontend-developer",
+        "api-developer",
+        "database-specialist",
+        "auth-specialist",
+        "integrations-specialist"
+      ],
+      "gates": [
+        "tests",
+        "security",
+        "a11y",
+        "perf",
+        "auth",
+        "data"
+      ],
+      "packs": [
+        "nextjs",
+        "laravel",
+        "python-web"
+      ]
+    },
+    "mobile": {
+      "label": "Mobile app",
+      "description": "iOS and Android apps",
+      "agents": [
+        "product-director",
+        "technical-director",
+        "quality-director",
+        "product-manager",
+        "tech-lead",
+        "qa-lead",
+        "devops-lead",
+        "performance-specialist",
+        "test-engineer",
+        "code-reviewer",
+        "docs-handoff",
+        "stack-advisor",
+        "ux-lead",
+        "frontend-lead",
+        "backend-lead",
+        "security-lead",
+        "ui-accessibility",
+        "mobile-developer",
+        "api-developer",
+        "database-specialist",
+        "auth-specialist",
+        "app-store-release"
+      ],
+      "gates": [
+        "tests",
+        "security",
+        "a11y",
+        "perf",
+        "store",
+        "offline",
+        "crash"
+      ],
+      "packs": [
+        "expo",
+        "flutter"
+      ]
+    },
+    "api": {
+      "label": "API",
+      "description": "Services and integrations",
+      "agents": [
+        "product-director",
+        "technical-director",
+        "quality-director",
+        "product-manager",
+        "tech-lead",
+        "qa-lead",
+        "devops-lead",
+        "performance-specialist",
+        "test-engineer",
+        "code-reviewer",
+        "docs-handoff",
+        "stack-advisor",
+        "backend-lead",
+        "security-lead",
+        "api-developer",
+        "database-specialist",
+        "auth-specialist",
+        "integrations-specialist"
+      ],
+      "gates": [
+        "tests",
+        "security",
+        "perf",
+        "contracts",
+        "load",
+        "errors"
+      ],
+      "packs": [
+        "laravel",
+        "python-web",
+        "nextjs"
+      ]
+    }
+  }
+}
