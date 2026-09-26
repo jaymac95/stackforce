@@ -60,7 +60,22 @@ if (/\bgit\s+(commit|push)\b/.test(cmd)) {
         return true;
       }
     })();
-    if (!isInitialCommit) {
+    // Publishing a new repo: the first push that creates the protected branch on the remote is allowed.
+    const createsRemoteBranch = (() => {
+      const m = /\bgit\s+push\b(?:\s+-\S+)*\s+([\w.-]+)\s+(?:HEAD:)?(\S+)/.exec(cmd);
+      if (!m || !protectedBranches.includes(m[2])) return false;
+      try {
+        const heads = execSync(`git ls-remote --heads ${m[1]} ${m[2]}`, {
+          cwd: projectDir,
+          stdio: ["ignore", "pipe", "ignore"],
+          timeout: 20000,
+        }).toString();
+        return heads.trim() === "";
+      } catch {
+        return false; // unreachable remote: stay safe
+      }
+    })();
+    if (!isInitialCommit && !createsRemoteBranch) {
       block(
         `"${pushTarget || branch}" is a protected branch. Create a story branch first: git switch -c story/NNN-short-name`,
       );
