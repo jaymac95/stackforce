@@ -1,1 +1,1 @@
-{"protectedBranches":["main","master"],"checks":[],"checkTimeoutSeconds":300,"runChecksBeforeCommit":true}
+{"protectedBranches":["main","master"],"checks":[],"checkTimeoutSeconds":300,"runChecksBeforeCommit":true,"activityLog":true,"dashboardPort":4455}

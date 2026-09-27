@@ -39,7 +39,15 @@ Run `/audit` to get an honest opinion of where a project stands. The track's rev
 | Verify | `/verify` (→ `/test`, `/security-check`, `/a11y-check`, `/perf-check`, …) | Every track gate green |
 | Ship | `/release` · `/handoff` | Quality director approves release |
 
-`/status` shows where you are. `/stack` (re)chooses the platform. `/decide` resolves disagreements between agents. `/audit` reviews the whole project and plans improvements.
+`/status` shows where you are. `/stack` (re)chooses the platform. `/decide` resolves disagreements between agents. `/audit` reviews the whole project and plans improvements. `/dashboard` shows the agents working, live.
+
+## Watch the studio work
+Run `/dashboard` (or `node .stackforce/dashboard/server.mjs --open` in a terminal) to open a live page at `http://localhost:4455`:
+- **Timeline**: a bar per agent run, so you can see who worked when and what ran in parallel.
+- **The team**: every agent on your track. A card lights up while that agent works, showing its task, its latest action (`Edit · route.ts`) and how long it has been going.
+- **Live activity**: a running feed of agents starting, finishing and using tools.
+
+It updates as work happens, runs only on your machine, and needs nothing installed beyond Node. The `activity` hook writes the log to `.stackforce/activity.jsonl` (git-ignored). Only file names and short command snippets are recorded, never file contents or prompts. Turn logging off with `"activityLog": false` in `.stackforce/config.json`, or change the port with `dashboardPort`.
 
 ## Tracks and stacks
 - **Website** — Next.js, WordPress, Shopify
@@ -65,13 +73,14 @@ CLAUDE.md              Master config the studio reads first
 .claude/
   agents/              Directors, leads, specialists (+ stack specialists)
   skills/              /start, /brief, /build-story, /verify, /release …
-  hooks/               Secrets, tests, branch safety, status line (Node)
+  hooks/               Secrets, tests, branch safety, status line, activity log (Node)
   rules/               Folder-scoped coding standards
   settings.json        Wires up hooks, permissions, status line
 .stackforce/
   state.json           Current track, stack, phase, stories, gates
   tracks.json          Which agents and gates each track uses
-  config.json          Protected branches, pre-commit checks
+  config.json          Protected branches, pre-commit checks, dashboard settings
+  dashboard/           Live studio dashboard (/dashboard)
 stacks/
   catalog.yaml         Options the stack advisor draws from
   packs/               Per-stack conventions and pitfalls

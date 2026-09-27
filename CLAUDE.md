@@ -14,7 +14,7 @@ Six phases, each ending in a gate that must pass before the next begins:
 5. **Verify** — `/verify` (runs `/test`, `/security-check`, `/a11y-check`, `/perf-check` and the track's other gates)
 6. **Ship** — `/release`, `/handoff`
 
-`/status` any time. `/stack` to (re)choose the platform. `/decide` when agents disagree. `/audit` for an honest review and improvement plan of an already-built project.
+`/status` any time. `/stack` to (re)choose the platform. `/decide` when agents disagree. `/audit` for an honest review and improvement plan of an already-built project. `/dashboard` to watch the agents work live.
 
 ## The team
 Agents live in `.claude/agents/`, grouped as directors (guard the goal, architecture and release), leads (own one area each) and specialists (do the hands-on work). Only the agents for the current track are used; see `.stackforce/tracks.json`.
