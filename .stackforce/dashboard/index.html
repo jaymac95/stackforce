@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stackforce Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #F2F3EE; --panel: #FAFBF7; --ink: #1C2430; --muted: #5B6572; --rule: #CBD0C6;
+  --cobalt: #2F5BEA; --cobalt-soft: #DFE6FD; --done: #2E7D4F; --done-soft: #DDEFE3; --warn: #B7790B; --off: #9AA2AB;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Instrument Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #13171D; --panel: #1A1F27; --ink: #E9ECE4; --muted: #A2AAB4; --rule: #2E3540;
+    --cobalt: #7D9BFF; --cobalt-soft: #1F2B52; --done: #6FCF97; --done-soft: #16301F; --warn: #E7B24A; --off: #5A626C;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #13171D; --panel: #1A1F27; --ink: #E9ECE4; --muted: #A2AAB4; --rule: #2E3540;
+  --cobalt: #7D9BFF; --cobalt-soft: #1F2B52; --done: #6FCF97; --done-soft: #16301F; --warn: #E7B24A; --off: #5A626C;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 15px/1.5 var(--body); -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { font-family: var(--display); margin: 0; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--cobalt); outline-offset: 2px; border-radius: 4px; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 clamp(16px, 3vw, 32px); }
+
+/* header */
+header { border-bottom: 1px solid var(--rule); padding: 18px 0; }
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; }
+.brand { font-family: var(--display); font-weight: 800; font-size: 19px; display: flex; align-items: center; gap: 10px; }
+.brand i { width: 13px; height: 13px; background: var(--cobalt); border-radius: 3px; box-shadow: 4px 4px 0 var(--ink); }
+.meta { min-width: 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--muted); font-size: 14px; }
+.pill { padding: 3px 10px; border: 1px solid var(--rule); border-radius: 999px; background: var(--panel); color: var(--ink); }
+.pill b { font-weight: 600; }
+.spacer { flex: 1; }
+.conn { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.conn::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--off); }
+.conn.live::before { background: var(--done); }
+.working-count { display: flex; align-items: baseline; gap: 8px; }
+.working-count b { font-family: var(--display); font-size: 34px; font-weight: 800; line-height: 1; color: var(--cobalt); font-variant-numeric: tabular-nums; }
+.working-count span { color: var(--muted); font-size: 14px; }
+
+main { padding: 24px 0 48px; display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+main > * { min-width: 0; }
+.panel { background: var(--panel); border: 1px solid var(--rule); border-radius: 14px; padding: 20px; }
+.panel-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.panel-head h2 { font-size: 18px; font-weight: 600; }
+.toggle { background: none; border: 1px solid var(--rule); border-radius: 8px; padding: 4px 10px; font-size: 13px; color: var(--muted); cursor: pointer; }
+.toggle[aria-pressed="true"] { border-color: var(--cobalt); color: var(--cobalt); }
+
+/* team */
+.tier + .tier { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--rule); }
+.tier h3 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 10px; font-family: var(--body); }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; align-items: start; }
+.card.idle { padding: 9px 14px; }
+.card { position: relative; border: 1.5px solid var(--rule); border-radius: 12px; padding: 12px 14px; background: var(--paper);  transition: border-color .2s, background .2s, opacity .2s; }
+.card .name { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.card .dot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--rule); }
+.card .line { margin-top: 4px; font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card .act { font-family: var(--mono); font-size: 12px; }
+.card .badge { position: absolute; top: 10px; right: 12px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.card.working { border-color: var(--cobalt); background: var(--cobalt-soft); }
+.card.working .dot { background: var(--cobalt); animation: pulse 1.2s ease-in-out infinite; }
+.card.working .line { color: var(--ink); }
+.card.done .dot { background: var(--done); }
+.card.idle { opacity: .72; }
+.card.off { opacity: .4; }
+.card.director .name::after { content: "director"; font-size: 11px; font-weight: 500; padding: 1px 7px; border-radius: 999px; background: var(--ink); color: var(--paper); }
+.studio { border-width: 2px; }
+@keyframes pulse { 50% { transform: scale(1.5); opacity: .5; } }
+
+/* timeline */
+.timeline { margin-bottom: 20px; }
+.tl-wrap { overflow-x: auto; }
+.tl-empty, .feed-empty { color: var(--muted); font-size: 14px; padding: 8px 0; }
+svg text { font-family: var(--body); font-size: 12px; fill: var(--muted); }
+svg .lbl { fill: var(--ink); font-weight: 500; }
+svg .grid { stroke: var(--rule); stroke-width: 1; }
+svg .bar-live { fill: var(--cobalt); }
+svg .bar-done { fill: var(--cobalt); opacity: .35; }
+
+/* feed */
+.feed { list-style: none; margin: 0; padding: 0; max-height: calc(100vh - 190px); overflow-y: auto; }
+.feed li { display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 10px; padding: 8px 0; border-top: 1px solid var(--rule); font-size: 13.5px; }
+.feed li:first-child { border-top: 0; }
+.feed time { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 1px; font-variant-numeric: tabular-nums; }
+.feed .who { font-weight: 600; }
+.feed .what { color: var(--muted); overflow-wrap: anywhere; }
+.feed .what code { font-family: var(--mono); font-size: 12px; color: var(--ink); }
+.feed li.k-spawn .who { color: var(--cobalt); }
+.feed li.k-stop .who { color: var(--done); }
+.feed li.k-session { color: var(--muted); font-style: italic; }
+.help { margin-top: 14px; font-size: 13px; color: var(--muted); }
+.help code { font-family: var(--mono); font-size: 12px; }
+
+@media (max-width: 960px) { main { grid-template-columns: minmax(0, 1fr); } .feed { max-height: 60vh; } }
+@media (max-width: 520px) { .cards { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <div class="brand"><i aria-hidden="true"></i>Stackforce Studio</div>
+    <div class="meta" id="meta"></div>
+    <div class="spacer"></div>
+    <div class="working-count" aria-live="polite"><b id="nworking">0</b><span>agents working</span></div>
+    <div class="conn" id="conn">Connecting…</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div>
+    <section class="panel timeline" aria-labelledby="tl-h">
+      <div class="panel-head">
+        <h2 id="tl-h">Timeline</h2>
+        <div role="group" aria-label="Timeline window">
+          <button class="toggle" data-win="15" aria-pressed="false">15 min</button>
+          <button class="toggle" data-win="60" aria-pressed="true">1 hour</button>
+          <button class="toggle" data-win="480" aria-pressed="false">8 hours</button>
+        </div>
+      </div>
+      <div class="tl-wrap" id="timeline"></div>
+    </section>
+    <section class="panel" aria-labelledby="team-h">
+      <div class="panel-head">
+        <h2 id="team-h">The team</h2>
+        <button class="toggle" id="showAll" aria-pressed="false">Show agents not on this track</button>
+      </div>
+      <div id="team"></div>
+    </section>
+
+  </div>
+
+  <section class="panel" aria-labelledby="feed-h">
+    <div class="panel-head"><h2 id="feed-h">Live activity</h2></div>
+    <ul class="feed" id="feed" aria-live="polite"></ul>
+    <p class="help">Recorded by the <code>activity</code> hook to <code>.stackforce/activity.jsonl</code>. Only file names and short command snippets are logged, never file contents.</p>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const STALE_MS = 45 * 60 * 1000;
+const WORDS = { ux: "UX", qa: "QA", api: "API", seo: "SEO", ui: "UI", devops: "DevOps", nextjs: "Next.js", expo: "Expo", python: "Python", web: "web", a11y: "a11y" };
+const human = (n) => n.split("-").map((w, i) => WORDS[w] ?? (i === 0 ? w[0].toUpperCase() + w.slice(1) : w)).join(" ");
+const TIERS = [["director", "Directors"], ["lead", "Leads"], ["specialist", "Specialists"], ["stack", "Stack experts"], ["other", "Other agents"]];
+
+let teamData = { agents: [], state: {} };
+let showAll = false;
+let windowMin = 60;
+const runs = new Map();      // id -> { id, agent, desc, start, end, async, agentId, lastAction, lastT }
+const stats = new Map();     // agent -> { count, lastEnd }
+let studio = { busy: false, lastAction: "", lastT: 0 };
+const feed = [];
+
+let clockNow = null; // set while replaying history so staleness is judged at event time
+const nowT = () => clockNow ?? Date.now();
+function openRuns() { return [...runs.values()].filter((r) => r.end == null && nowT() - r.lastT < STALE_MS); }
+function endRun(r, t) {
+  if (!r || r.end != null) return false;
+  r.end = t;
+  const s = stats.get(r.agent) ?? { count: 0, lastEnd: 0 };
+  s.count++; s.lastEnd = t;
+  stats.set(r.agent, s);
+  return true;
+}
+function findRunFor(e) {
+  const open = openRuns();
+  if (e.agentId) { const r = open.find((r) => r.agentId === e.agentId); if (r) return r; }
+  if (e.agent) { const r = open.filter((r) => r.agent === e.agent).sort((a, b) => a.start - b.start)[0]; if (r) return r; }
+  return null;
+}
+function addFeed(t, kind, who, what) {
+  feed.unshift({ t, kind, who, what });
+  if (feed.length > 300) feed.pop();
+}
+
+function apply(e, quiet) {
+  const t = e.t ?? Date.now();
+  if (quiet) clockNow = t;
+  switch (e.type) {
+    case "session":
+      for (const r of openRuns()) endRun(r, t);
+      studio = { busy: false, lastAction: "", lastT: t };
+      addFeed(t, "session", "", "New Claude Code session");
+      break;
+    case "spawn":
+      runs.set(e.id ?? `${e.agent}-${t}`, { id: e.id, agent: e.agent, desc: e.desc, start: t, end: null, async: false, lastAction: "", lastT: t });
+      studio.busy = true; studio.lastT = t;
+      addFeed(t, "spawn", human(e.agent), e.desc || "started");
+      break;
+    case "done": {
+      const r = runs.get(e.id);
+      if (!r) break;
+      if (e.async) { r.async = true; addFeed(t, "info", human(r.agent), "working in the background"); }
+      else if (endRun(r, t)) addFeed(t, "stop", human(r.agent), "finished");
+      break;
+    }
+    case "start": {
+      const r = openRuns().filter((r) => r.agent === e.agent && !r.agentId).sort((a, b) => b.start - a.start)[0];
+      if (r) r.agentId = e.agentId;
+      break;
+    }
+    case "stop": {
+      const r = findRunFor(e) ?? openRuns().filter((r) => r.async).sort((a, b) => a.start - b.start)[0];
+      if (endRun(r, t)) addFeed(t, "stop", human(r.agent), "finished");
+      break;
+    }
+    case "tool": {
+      let r = findRunFor(e);
+      if (!r && !e.agentId && !e.agent) {
+        // Older Claude Code doesn't say who made the call. While a foreground agent runs, the
+        // main session is waiting on it, so the newest foreground run is the likely caller.
+        r = openRuns().filter((r) => !r.async).sort((a, b) => b.start - a.start)[0] ?? null;
+      }
+      const action = e.target ? `${e.tool} · ${e.target}` : e.tool;
+      if (r) { r.lastAction = action; r.lastT = t; }
+      else { studio.busy = true; studio.lastAction = action; studio.lastT = t; }
+      addFeed(t, "tool", r ? human(r.agent) : "Studio", action);
+      break;
+    }
+    case "idle":
+      for (const r of openRuns().filter((r) => !r.async)) endRun(r, t);
+      studio.busy = false; studio.lastT = t;
+      addFeed(t, "info", "Studio", "waiting for you");
+      break;
+  }
+  if (!quiet) render();
+}
+
+/* rendering */
+const ago = (t) => {
+  const s = Math.max(0, Math.round((Date.now() - t) / 1000));
+  if (s < 60) return `${s}s`;
+  if (s < 3600) return `${Math.floor(s / 60)}m`;
+  return `${Math.floor(s / 3600)}h ${Math.floor((s % 3600) / 60)}m`;
+};
+const clock = (t) => new Date(t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+function el(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+
+function card(name, tier, desc, onTrack) {
+  const mine = openRuns().filter((r) => r.agent === name);
+  const s = stats.get(name);
+  const state = mine.length ? "working" : s ? "done" : "idle";
+  const c = el("div", `card ${state}${tier === "director" ? " director" : ""}${onTrack ? "" : " off"}`);
+  const nm = el("div", "name"); nm.append(el("span", "dot"), el("span", "", human(name)));
+  c.append(nm);
+  if (mine.length) {
+    const r = mine.sort((a, b) => b.lastT - a.lastT)[0];
+    c.append(el("div", "line", r.desc || "working"));
+    c.append(el("div", "line act", r.lastAction || "thinking…"));
+    c.append(el("span", "badge", (mine.length > 1 ? `×${mine.length} · ` : "") + ago(r.start)));
+    c.title = `${human(name)} is working: ${r.desc}`;
+  } else if (s) {
+    c.append(el("div", "line", `Finished ${ago(s.lastEnd)} ago`));
+    c.append(el("span", "badge", `${s.count} run${s.count > 1 ? "s" : ""}`));
+    c.title = desc;
+  } else {
+    c.title = desc;
+  }
+  return c;
+}
+
+function renderTeam() {
+  const root = $("team"); root.replaceChildren();
+  // The main session coordinates everyone.
+  const st = el("div", "cards");
+  const busy = studio.busy && Date.now() - studio.lastT < 10 * 60 * 1000;
+  const sc = el("div", `card studio ${busy ? "working" : "idle"}`);
+  const nm = el("div", "name"); nm.append(el("span", "dot"), el("span", "", "Studio (main session)"));
+  sc.append(nm, el("div", "line", busy ? "Coordinating the team" : "Waiting for you"));
+  if (busy && studio.lastAction) sc.append(el("div", "line act", studio.lastAction));
+  st.append(sc);
+  const t0 = el("div", "tier"); t0.append(el("h3", "", "Coordinator"), st); root.append(t0);
+
+  const known = new Set(teamData.agents.map((a) => a.name));
+  const extra = new Set([...runs.values()].map((r) => r.agent).filter((n) => !known.has(n)));
+  for (const [tier, label] of TIERS) {
+    let list = tier === "other"
+      ? [...extra].map((name) => ({ name, tier: "other", description: "Built-in agent", onTrack: true }))
+      : teamData.agents.filter((a) => a.tier === tier);
+    list = list.filter((a) => showAll || a.onTrack || openRuns().some((r) => r.agent === a.name) || stats.has(a.name));
+    if (!list.length) continue;
+    const wrap = el("div", "tier"); wrap.append(el("h3", "", label));
+    const cards = el("div", "cards");
+    for (const a of list) cards.append(card(a.name, a.tier, a.description, a.onTrack));
+    wrap.append(cards); root.append(wrap);
+  }
+}
+
+function renderMeta() {
+  const s = teamData.state ?? {};
+  const m = $("meta"); m.replaceChildren();
+  const pill = (k, v) => { const p = el("span", "pill"); p.append(`${k} `); p.append(el("b", "", v)); m.append(p); };
+  if (!s.phase || s.phase === "start") { m.append(el("span", "", "Project not set up yet · run /start or /adopt")); return; }
+  pill("", s.project ?? "Project");
+  pill("Track", teamData.trackLabel ?? s.track);
+  pill("Stack", s.stack ? human(s.stack) : "none");
+  pill("Phase", s.phase);
+  if (s.stories?.total) pill("Stories", `${s.stories.done ?? 0}/${s.stories.total}`);
+}
+
+function renderFeed() {
+  const ul = $("feed"); ul.replaceChildren();
+  if (!feed.length) { ul.append(el("li", "feed-empty", "No activity yet. Start working in Claude Code and it will show up here.")); return; }
+  for (const f of feed.slice(0, 200)) {
+    const li = el("li", `k-${f.kind}`);
+    li.append(el("time", "", clock(f.t)));
+    const d = el("div");
+    if (f.who) { d.append(el("span", "who", f.who), " "); }
+    d.append(el("span", "what", f.what));
+    li.append(d); ul.append(li);
+  }
+}
+
+function renderTimeline() {
+  const box = $("timeline"); box.replaceChildren();
+  const now = Date.now(), from = now - windowMin * 60 * 1000;
+  // A run that went quiet for too long is drawn as ending at its last sign of life.
+  const endOf = (r) => r.end ?? (now - r.lastT > STALE_MS ? r.lastT : null);
+  const inWin = [...runs.values()].filter((r) => (endOf(r) ?? now) >= from);
+  if (!inWin.length) { box.append(el("div", "tl-empty", "No agent runs in this window.")); return; }
+  const agents = [...new Set(inWin.sort((a, b) => a.start - b.start).map((r) => r.agent))];
+  const W = Math.max(300, box.clientWidth), L = W < 520 ? 118 : 150, R = 12, rowH = 26, top = 22;
+  const H = top + agents.length * rowH + 6;
+  const x = (t) => L + ((Math.max(t, from) - from) / (now - from)) * (W - L - R);
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("width", W); svg.setAttribute("height", H); svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", `Agent runs over the last ${windowMin} minutes`);
+  const add = (tag, attrs, text) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (text) n.textContent = text; svg.append(n); return n; };
+  const ticks = W < 520 ? 2 : 4;
+  for (let i = 0; i <= ticks; i++) {
+    const t = from + ((now - from) * i) / ticks, xx = x(t);
+    add("line", { x1: xx, x2: xx, y1: top - 6, y2: H, class: "grid" });
+    add("text", { x: xx, y: 12, "text-anchor": i === 0 ? "start" : i === ticks ? "end" : "middle" }, i === ticks ? "now" : clock(t).slice(0, 5));
+  }
+  agents.forEach((a, i) => {
+    const y = top + i * rowH;
+    add("text", { x: 0, y: y + 16, class: "lbl" }, human(a));
+    for (const r of inWin.filter((r) => r.agent === a)) {
+      const x1 = x(r.start), x2 = Math.max(x1 + 3, x(endOf(r) ?? now));
+      const b = add("rect", { x: x1, y: y + 5, width: x2 - x1, height: 14, rx: 4, class: endOf(r) == null ? "bar-live" : "bar-done" });
+      const tt = document.createElementNS(NS, "title");
+      tt.textContent = `${human(a)}: ${r.desc || "run"} (${clock(r.start)}${endOf(r) ? "–" + clock(endOf(r)) : ", running"})`;
+      b.append(tt);
+    }
+  });
+  box.append(svg);
+}
+
+function render() {
+  $("nworking").textContent = openRuns().length;
+  renderMeta(); renderTeam(); renderFeed(); renderTimeline();
+}
+
+/* wiring */
+$("showAll").addEventListener("click", (ev) => { showAll = !showAll; ev.currentTarget.setAttribute("aria-pressed", showAll); render(); });
+document.querySelectorAll("[data-win]").forEach((b) => b.addEventListener("click", () => {
+  windowMin = Number(b.dataset.win);
+  document.querySelectorAll("[data-win]").forEach((o) => o.setAttribute("aria-pressed", o === b));
+  renderTimeline();
+}));
+window.addEventListener("resize", renderTimeline);
+setInterval(render, 1000);
+
+function connect() {
+  const es = new EventSource("/events");
+  es.addEventListener("team", (m) => { teamData = JSON.parse(m.data); render(); });
+  es.addEventListener("history", (m) => {
+    runs.clear(); stats.clear(); feed.length = 0;
+    for (const e of JSON.parse(m.data)) apply(e, true);
+    clockNow = null;
+    render();
+  });
+  es.addEventListener("activity", (m) => { try { apply(JSON.parse(m.data)); } catch {} });
+  es.onopen = () => { $("conn").textContent = "Live"; $("conn").classList.add("live"); };
+  es.onerror = () => { $("conn").textContent = "Reconnecting…"; $("conn").classList.remove("live"); };
+}
+connect();
+</script>
+</body>
+</html>

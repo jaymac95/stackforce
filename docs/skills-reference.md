@@ -19,3 +19,4 @@
 ## Any time
 - `/status` — where things stand and the next command
 - `/decide` — resolve a disagreement between agents
+- `/dashboard` — open the live studio page: timeline, team cards that light up while agents work, activity feed
