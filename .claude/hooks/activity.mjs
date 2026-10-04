@@ -61,12 +61,21 @@ function clip(s, n) {
 function target(tool, ti) {
   const p = ti.file_path ?? ti.notebook_path ?? ti.path;
   if (p) return basename(String(p));
-  if (ti.command) return clip(ti.command, 60);
+  if (ti.command) return clip(redact(ti.command), 60);
   if (ti.pattern) return clip(ti.pattern, 40);
   if (ti.url) return clip(ti.url, 60);
   if (ti.query) return clip(ti.query, 50);
   if (ti.skill) return "/" + ti.skill;
   return "";
+}
+
+// Drop a leading `cd <dir> &&` (it hides the real command) and mask anything that looks like a credential.
+function redact(c) {
+  return String(c)
+    .replace(/^\s*cd\s+("[^"]*"|'[^']*'|\S+)\s*(&&|;)\s*/, "")
+    .replace(/\b((?:[\w-]*(?:key|token|secret|password|passwd|pwd))\s*[=:]\s*)("[^"]*"|'[^']*'|\S+)/gi, "$1***")
+    .replace(/\b(?:sk|rk|pk)_(?:live|test)_\w+|\bsk-[\w-]{16,}|\b(?:ghp|gho|ghs|ghu|github_pat)_\w+|\bAKIA[0-9A-Z]{16}|\bxox[abposr]-[\w-]+/g, "***")
+    .replace(/(Bearer\s+)\S+/gi, "$1***");
 }
 
 // Keep the log small: at session start, drop the oldest half once it passes MAX_BYTES.

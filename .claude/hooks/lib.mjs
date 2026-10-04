@@ -41,6 +41,11 @@ export function isSecretName(name) {
   return !SECRET_OK.some((re) => re.test(n)) && SECRET.some((re) => re.test(n));
 }
 
+/** A gate's status. Gates are `{ status, note, at, commit }`; older state may hold a bare "pass"/"fail" string. */
+export function gateStatus(g) {
+  return typeof g === "string" ? g : g?.status;
+}
+
 /** Exit code 2 blocks the tool call and shows the reason to Claude. */
 export function block(reason) {
   process.stderr.write(`Stackforce guard: ${reason}\n`);

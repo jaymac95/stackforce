@@ -38,3 +38,9 @@ Run `/decide` to do this. Record the outcome in `docs/decisions/`.
 
 ## Keep docs honest
 `docs/` is the source of truth: `brief.md`, `prd.md`, `architecture.md`, `ux.md`, `stories/`, `decisions/`, `audits/`, `handoff.md`. Update state and gates as you finish each step so `/status` and the status line stay accurate.
+
+"Set gate `X` to `pass`" always means writing this object under `gates` in `.stackforce/state.json`:
+```json
+"security": { "status": "pass", "note": "no high or critical issues", "at": "2026-10-04T12:00:00Z", "commit": "a1b2c3d" }
+```
+`status` is `pass`, `fail` or `pending`; `commit` is `git rev-parse --short HEAD` when the gate ran. A gate is stale when code has changed since its `commit` (`git diff --quiet <commit> HEAD -- . ':!docs' ':!.stackforce'` fails).

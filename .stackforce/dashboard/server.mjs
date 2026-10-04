@@ -69,7 +69,10 @@ function broadcast(event, data) {
   for (const res of clients) res.write(`event: ${event}\ndata: ${data}\n\n`);
 }
 watchFile(LOG, { interval: 400 }, (cur) => {
-  if (cur.size < offset) offset = 0; // log was trimmed
+  if (cur.size < offset) {
+    offset = 0; // log was trimmed
+    partial = "";
+  }
   if (cur.size === offset) return;
   const fd = openSync(LOG, "r");
   const buf = Buffer.alloc(cur.size - offset);
@@ -83,6 +86,8 @@ watchFile(LOG, { interval: 400 }, (cur) => {
 watchFile(STATE, { interval: 1000 }, () => broadcast("team", JSON.stringify(team())));
 
 const server = createServer((req, res) => {
+  // Only answer pages served from this machine, so another site can't read the log through DNS rebinding.
+  if (!/^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(req.headers.host ?? "")) return res.writeHead(403).end("forbidden");
   const url = new URL(req.url, "http://localhost");
   if (url.pathname === "/") {
     res.writeHead(200, { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" });

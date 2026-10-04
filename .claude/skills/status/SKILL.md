@@ -7,6 +7,6 @@ Read `.stackforce/state.json`, `docs/stories/` and gate results. Reply in at mos
 - Project, track and stack
 - Phase, and stories done out of total
 - Current story
-- Gates: passed, failed, pending
+- Gates: passed, failed, pending, and stale (code changed since the gate's `commit`; see `CLAUDE.md`)
 - Anything blocked and who owns it
 - The single next command to run
