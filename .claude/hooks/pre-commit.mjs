@@ -2,8 +2,8 @@
 // then run the project's checks.
 import { execSync, spawnSync } from "node:child_process";
 import { readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
-import { readInput, readJson, block, allow, projectDir } from "./lib.mjs";
+import { basename, join } from "node:path";
+import { readInput, readJson, isSecretName, block, allow, projectDir } from "./lib.mjs";
 
 const input = await readInput();
 const cmd = String(input?.tool_input?.command ?? "");
@@ -21,6 +21,19 @@ try {
   allow(); // not a git repo
 }
 const addsFirst = /\bgit\s+add\b/.test(cmd) || /\bgit\s+commit\b[^;&|]*\s(-[a-zA-Z]*a[a-zA-Z]*|--all)\b/.test(cmd);
+
+// Secrets files themselves (for example `git add -f .env`) never get committed, whatever they contain.
+let files = [];
+try {
+  files = git("diff --cached --name-only -z").split("\0");
+} catch {}
+if (addsFirst) {
+  const adds = [...cmd.matchAll(/\bgit\s+add\b([^;&|]*)/g)].flatMap((m) => m[1].split(/\s+/));
+  files.push(...adds.map((t) => t.replace(/^["']|["']$/g, "")));
+}
+const secretFile = files.map((f) => basename(f)).find((name) => name && isSecretName(name));
+if (secretFile) block(`"${secretFile}" may contain secrets and must not be committed. Unstage it (git restore --staged ${secretFile}) and keep it in .gitignore.`);
+
 const untracked = [];
 if (addsFirst) {
   try {

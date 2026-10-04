@@ -1,5 +1,5 @@
 // Status line: project, track, stack, phase, story progress and context used.
-import { readInput, readJson } from "./lib.mjs";
+import { readInput, readJson, gateStatus } from "./lib.mjs";
 
 const input = await readInput();
 const s = readJson(".stackforce/state.json", null);
@@ -22,5 +22,7 @@ if (!s || s.phase === "start") {
   const st = s.stories ?? {};
   const story = st.total ? ` · story ${st.done ?? 0}/${st.total}` : "";
   const cur = st.current ? ` (${st.current})` : "";
-  console.log(`Stackforce · ${LABELS[s.track] ?? s.track} · ${s.stack ?? "no stack"} · ${s.phase}${story}${cur}${model}${ctx}`);
+  const failing = Object.values(s.gates ?? {}).filter((g) => gateStatus(g) === "fail").length;
+  const gates = failing ? ` · ${failing} gate${failing > 1 ? "s" : ""} failing` : "";
+  console.log(`Stackforce · ${LABELS[s.track] ?? s.track} · ${s.stack ?? "no stack"} · ${s.phase}${story}${cur}${gates}${model}${ctx}`);
 }

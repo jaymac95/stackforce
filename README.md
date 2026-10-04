@@ -67,6 +67,8 @@ Enforced automatically by hooks, so the studio can't skip them:
 
 Configure protected branches and pre-commit checks in `.stackforce/config.json`.
 
+Changing a hook? Run `node --test .claude/hooks/tests/`. The tests use throwaway git repos, so they run offline and never touch your project.
+
 ## Layout
 ```
 CLAUDE.md              Master config the studio reads first
@@ -85,7 +87,7 @@ stacks/
   catalog.yaml         Options the stack advisor draws from
   packs/               Per-stack conventions and pitfalls
 docs/
-  templates/           Brief, PRD, story, architecture, decision, handoff, audit
+  templates/           Brief, PRD, story, architecture, decision, handoff, audit, release checklist
   decisions/           Decision records, written as you go
   audits/              Reports from /audit
 ```
